@@ -1,77 +1,105 @@
 import pyautogui
 import pytesseract
-from PIL import Image
+from PIL import ImageOps
 import time
 import re
 
 # Configure Tesseract path (change to the correct path where Tesseract is installed)
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
-# Function to find and click any file with a given extension
-def find_and_click_file_with_extension(extensions, reference_image, padding=(0, 0, 800, 600)):
+# Function to process text in a specific region
+def extract_files_with_extension(region, extension=".qmdl2"):
     """
-    Locate a file with a specific extension within a region defined dynamically by a reference image.
+    Extract all files with a given extension from the specified screen region.
 
     Parameters:
-        extensions (list): List of file extensions to search for (e.g., ['.qmdl', '.qmdl2']).
-        reference_image (str): Path to the image to use as a region reference.
-        padding (tuple): (x_offset, y_offset, width, height) to define the region around the reference.
+        region (tuple): (x, y, width, height) - Region to search for file names.
+        extension (str): File extension to search for (default: ".qmdl2").
 
     Returns:
-        bool: True if a file is found and clicked, otherwise False.
+        list: List of file names with the given extension.
     """
-    # Locate the reference image
-    reference_location = pyautogui.locateOnScreen(reference_image)
-    if not reference_location:
-        print("Reference image not found.")
-        return False
-
-    print(f"Reference image found at: {reference_location}")
-
-    # Define the region based on the reference image and padding
-    x, y, width, height = reference_location
-    x_offset, y_offset, region_width, region_height = padding
-    region = (x + x_offset, y + y_offset, region_width, region_height)
-    print(f"Search region: {region}")
-
-    # Take a screenshot of the defined region
     screenshot = pyautogui.screenshot(region=region)
-
-    # Perform OCR to extract text
-    detected_text = pytesseract.image_to_string(screenshot)
+    grayscale_screenshot = ImageOps.grayscale(screenshot)
+    detected_text = pytesseract.image_to_string(grayscale_screenshot)
     print(f"Detected text:\n{detected_text}")
 
-    # Search for any file with the given extensions
-    for extension in extensions:
-        match = re.search(rf'\S+{re.escape(extension)}', detected_text)  # Match file name with the extension
-        if match:
-            print(f"File found: {match.group()}")
-
-            # Locate the file visually on the screen and click
-            # Adjust the location based on region offset
-            location = pyautogui.locateOnScreen(screenshot)
-            if location:
-                pyautogui.click(location)
-                print(f"Clicked on: {match.group()}")
-                return True
-
-    return False
+    # Extract filenames with the specified extension
+    files = re.findall(rf'\S+{re.escape(extension)}', detected_text)
+    return files
 
 
 # Main script
-time.sleep(5)  # Delay to switch to the file explorer
+time.sleep(5)  # Allow time to switch to the file explorer
 
-# Define the file extensions to search for
-file_extensions = ['.qmdl', '.qmdl2']
+# Define the region where filenames are displayed (adjust as needed based on your screen resolution)
+region_to_search = (100, 200, 800, 600)  # (x, y, width, height)
 
-# Provide the reference image to define the region
-reference_image_path = 'C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/file_region.png'  # Replace with your image
-
-# Define padding around the reference image (x_offset, y_offset, width, height)
-padding_around_reference = (0, 100, 800, 600)  # Adjust as needed for your screen
-
-# Attempt to find and click a file with the specified extensions
-if find_and_click_file_with_extension(file_extensions, reference_image_path, padding_around_reference):
-    print("File with the specified extension clicked successfully!")
+# Step 1: Locate and click "Open Option"
+location_open_option = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/open_option1.png')
+if location_open_option:
+    print(f"Object 'Open Option' found at: {location_open_option}")
+    pyautogui.click(location_open_option)
 else:
-    print("No file with the specified extension was found.")
+    print("Object 'Open Option' not found.")
+
+time.sleep(5)
+
+# Step 2: Scroll and dynamically pick a new file
+processed_files = set()  # To track files already processed
+for attempt in range(10):  # Scroll up to 10 times
+    files = extract_files_with_extension(region=region_to_search, extension=".qmdl2")
+    new_file = next((file for file in files if file not in processed_files), None)
+
+    if new_file:
+        processed_files.add(new_file)
+        print(f"New file found: {new_file}")
+        
+        # Simulate typing the file name into the file input field
+        pyautogui.click(350, 600)  # Adjust coordinates for the "File name" input field
+        pyautogui.typewrite(new_file)
+        pyautogui.press("enter")
+        break
+    else:
+        print("No new files found. Scrolling...")
+        pyautogui.scroll(-100)  # Scroll down
+        time.sleep(0.5)
+
+time.sleep(5)
+
+# Step 3: Locate and click "Open Button"
+location_open_button = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/open_button.png', confidence=0.8)
+if location_open_button:
+    print(f"Object 'Open Button' found at: {location_open_button}")
+    pyautogui.click(location_open_button)
+else:
+    print("Object 'Open Button' not found.")
+
+time.sleep(15)
+
+# Step 4: Locate and click "Save to Text"
+location_save_to_text = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/save_to_text.png')
+if location_save_to_text:
+    print(f"Object 'Save to Text' found at: {location_save_to_text}")
+    pyautogui.click(location_save_to_text)
+else:
+    print("Object 'Save to Text' not found.")
+
+time.sleep(5)
+
+# Step 5: Locate and click "Click on Save"
+location_click_on_save = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/click_on_save.png')
+if location_click_on_save:
+    print(f"Object 'Click on Save' found at: {location_click_on_save}")
+    pyautogui.click(location_click_on_save)
+else:
+    print("Object 'Click on Save' not found.")
+
+# Step 6: Check if the file already exists and click "Yes Button" if necessary
+time.sleep(5)
+location_yes_button = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/yes_button.png')
+if location_yes_button:
+    print(f"Object 'Yes Button' found at: {location_yes_button}")
+    pyautogui.click(location_yes_button)
+else:
+    print("Object 'Yes Button' not found.")
