@@ -14,7 +14,7 @@ else:
 
 time.sleep(5)
 
-location_open_file = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/open_file.png')
+location_open_file = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/open_file2.png')
 
 if location_open_file:
     print(f"Object found at: {location_open_file}")
@@ -24,7 +24,7 @@ if location_open_file:
 else:
     print("Object not found.")
 
-time.sleep(5)
+time.sleep(20)
 
 location_open_button = pyautogui.locateOnScreen('C:/Users/Khach/Dropbox/PC/Documents/semester_projecr/open_button.png')
 print('im here')
