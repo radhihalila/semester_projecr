@@ -1,71 +1,47 @@
 #!/bin/bash
 
 # Variables
-QCAT_PATH="/opt/qcom/QCAT7/bin/QCAT"
-LOG_DIR="/opt/qcom/QCAT7/logs"
-TRANSFORMED_DIR="/opt/qcom/QCAT7/transformed_logs"
-LOCAL_MACHINE_USER="Khach"
-LOCAL_MACHINE_IP="192.168.1.11"
-LOCAL_DESTINATION_PATH="C:/Users/Khach/Downloads/transformed_logs"
-TRANSFORMER_SCRIPT="C:/Users/Khach/transformer_script.py"
+SOURCE_DIR="/home/haswell/karim"  # Directory on Haswell where .txt files are generated
+WINDOWS_USER="Khach"      # Your Windows username
+WINDOWS_IP="192.168.1.11"              # Replace with the IP address of your Windows machine
+WINDOWS_DESTINATION="C:/Users/Khach/Downloads/transformed_logs"  # Replace with the target directory on your Windows machine
+QCAT_PATH="/opt/qcom/QCAT7/bin/QCAT"  # Path to QCAT binary
+LOG_DIR="/path/to/qmdl/files"         # Directory where QCAT should read input files
+TRANSFORMED_DIR="/home/haswell/karim"  
 
-# Ensure the transformed logs directory exists
-mkdir -p "$TRANSFORMED_DIR"
+# Ensure necessary directories exist
+mkdir -p "$SOURCE_DIR" "$TRANSFORMED_DIR"
 
-# Step 1: Start QLog
-echo "Starting QLog..."
+# Step 1: Start QCAT
+echo "Starting QCAT..."
 $QCAT_PATH &
-QLOG_PID=$!
-echo "QLog started with PID $QLOG_PID."
+QCAT_PID=$!  # Get QCAT process ID
+echo "QCAT started with PID $QCAT_PID."
 
-# Step 2: Monitor for new QMDL files
-echo "Monitoring directory for new QMDL files: $LOG_DIR"
-while true; do
-  # Check for the latest QMDL file
-  NEW_FILE=$(ls -Art "$LOG_DIR"/*.qmdl 2>/dev/null | tail -n 1)
-  
-  if [[ -n "$NEW_FILE" ]]; then
-    echo "New QMDL file detected: $NEW_FILE"
-
-    # Step 3: Transform QMDL to text using QCAT
-    TRANSFORMED_FILE="$TRANSFORMED_DIR/$(basename "$NEW_FILE" .qmdl).txt"
-    echo "Transforming $NEW_FILE to $TRANSFORMED_FILE..."
-    $QCAT_PATH --input "$NEW_FILE" --output "$TRANSFORMED_FILE"  # Adjust QCAT's CLI options if needed
-    
-    if [[ -f "$TRANSFORMED_FILE" ]]; then
-      echo "Transformation successful: $TRANSFORMED_FILE"
-      
-      # Step 4: Send the transformed file to the local Windows machine
-      echo "Transferring $TRANSFORMED_FILE to Windows machine..."
-      scp "$TRANSFORMED_FILE" "$LOCAL_MACHINE_USER@$LOCAL_MACHINE_IP:\"$LOCAL_DESTINATION_PATH\""
-      
+# Function to copy new text files
+copy_files() {
+  echo "Checking for new .txt files in $SOURCE_DIR..."
+  for file in "$SOURCE_DIR"/*.txt; do
+    # Check if file exists and is new
+    if [[ -f "$file" ]]; then
+      echo "Found file: $file"
+      echo "Transferring $file to Windows machine..."
+      scp "$file" "$WINDOWS_USER@$WINDOWS_IP:\"$WINDOWS_DESTINATION\""
       if [[ $? -eq 0 ]]; then
-        echo "File transferred successfully to $LOCAL_MACHINE_IP:$LOCAL_DESTINATION_PATH"
-        
-        # Step 5: Execute the transformer script on Windows via SSH
-        echo "Executing transformer script on Windows machine..."
-        ssh "$LOCAL_MACHINE_USER@$LOCAL_MACHINE_IP" "python \"$TRANSFORMER_SCRIPT\" \"$LOCAL_DESTINATION_PATH/$(basename "$TRANSFORMED_FILE")\""
-        
-        if [[ $? -eq 0 ]]; then
-          echo "Transformer script executed successfully."
-        else
-          echo "Error: Failed to execute transformer script on Windows machine."
-        fi
+        echo "File $file successfully transferred to $WINDOWS_IP:$WINDOWS_DESTINATION"
       else
-        echo "Error: File transfer to Windows machine failed."
+        echo "Error: Failed to transfer $file"
       fi
-    else
-      echo "Error: Transformation failed for $NEW_FILE."
     fi
+  done
+}
 
-    # Exit after processing one file (or remove this line to keep monitoring continuously)
-    break
-  fi
-
-  # Wait before checking again
-  sleep 2
+# Main loop to monitor and copy new files
+while true; do
+  copy_files
+  sleep 10  # Check every 10 seconds for new files
 done
 
-# Clean up
-kill $QLOG_PID
-echo "QLog process stopped."
+# Cleanup (only reached if the loop ends for some reason)
+kill $QCAT_PID
+echo "QCAT process stopped."
