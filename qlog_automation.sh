@@ -45,3 +45,4 @@ done
 # Cleanup (only reached if the loop ends for some reason)
 kill $QCAT_PID
 echo "QCAT process stopped."
+scp /home/haswell/karim/20241113_101853_0000.txt Khach@192.168.1.11:"C:/Users/Khach/Downloads/transformed_logs"
