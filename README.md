@@ -63,8 +63,8 @@ This semester project focuses on automating the conversion of **qmdl/qmdl2 files
 
 ### **Step 1: Connect to Remote Machines**
 1. **Connect to `cinfra` using PuTTY**:
-   (images/putty1.png)
-   (images/putty3.png)
+   ![Connecting to cinfra using PuTTY](images/putty1.png)
+   ![Connecting to cinfra using PuTTY](images/putty3.png)
 
 2. **SSH to `haswell` from `cinfra`**:
    ```bash
