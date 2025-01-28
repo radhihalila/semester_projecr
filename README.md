@@ -53,8 +53,9 @@ This semester project focuses on automating the conversion of **qmdl/qmdl2 files
 3. **Prepare Reference Images**:
    - Capture screenshots of QCAT buttons and save them as `.png` files in your project directory (e.g., `open_button.png`, `save_button.png`).
 
-4. **Install QCAT**:
-   - Ensure QCAT is installed on your machine. Default path: `/opt/qcom/QCAT7/bin/QCAT`.
+4. **Run QCAT**:
+   - We can run it manually using this command: sudo /opt/qcom/QCAT7/bin/QCAT
+   - We need XLaunch running in the background.
 
 ---
 
@@ -62,10 +63,8 @@ This semester project focuses on automating the conversion of **qmdl/qmdl2 files
 
 ### **Step 1: Connect to Remote Machines**
 1. **Connect to `cinfra` using PuTTY**:
-   - Use the following command in your SSH client:
-     ```bash
-     ssh -X username@cinfra_ip
-     ```
+   ("C:\Users\Khach\Dropbox\PC\Desktop\putty1.png")
+   ("C:\Users\Khach\Dropbox\PC\Desktop\putty3.png")
 
 2. **SSH to `haswell` from `cinfra`**:
    ```bash
@@ -86,7 +85,7 @@ This semester project focuses on automating the conversion of **qmdl/qmdl2 files
    ```
 
 ---
-
+The automation script is running in a local windows machine.
 ## **Sample Script: `automate_qcat.py`**
 ```python
 import pyautogui
