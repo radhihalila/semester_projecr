@@ -122,10 +122,7 @@ locate_and_click("yes_button.png")  # Optional for overwrites
 2. **Adjust Confidence Level**:
    - If PyAutoGUI cannot locate elements, adjust the `confidence` parameter (e.g., `confidence=0.7`).
 3. **Verify Button Locations**:
-   - Use the following command to print mouse coordinates:
-     ```python
-     pyautogui.displayMousePosition()
-     ```
+   - Use screenshots to ensure all referenced elements are visually distinct and recognizable.
 
 ---
 
