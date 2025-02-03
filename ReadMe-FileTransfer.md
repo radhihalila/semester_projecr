@@ -1,39 +1,41 @@
-# Netmiko SCP Automation Script
+# Automation Execution and File Transfer using SCP
 
-This Python script uses [Netmiko](https://github.com/ktbyers/netmiko) to connect to one or more remote Linux devices, execute commands to create a file, and then copy that file to a remote server via SCP.
+This project demonstrates an automation process that connects to a remote Linux device using Netmiko, executes a series of commands to create a file, and then transfers that file to another server using SCP.
 
-## Overview
+## Technical Details
 
-For each device listed, the script:
+- **Programming Language:** Python 3  
+- **Library Used:** [Netmiko](https://github.com/ktbyers/netmiko)  
+- **Device Type:** Linux  
+- **Key Modules:**  
+  - `ConnectHandler` for establishing SSH connections.
+  - `exceptions` to handle connection and authentication issues.
+- **Error Handling:**  
+  The script handles `NetmikoTimeoutException` and `NetmikoAuthenticationException` to ensure robust connections.
 
-1. **Connects to the Device:**  
-   Uses Netmiko's `ConnectHandler` to establish an SSH connection to a Linux device.
+## Automation Process
 
-2. **Executes Commands:**
-   - **Command 0:**  
-     Changes the directory to `/home/ubuntu/QCAT` and creates an empty file named `Log-20250101.qmdl`.
-   - **Command 1:**  
-     Uses SCP to transfer the created file from the device to a remote server (`5.34.196.245`) into `/home/ubuntu/QMDL/`.
+1. **Device Connection:**  
+   The script reads a list of device IP addresses and connects to each using SSH.
 
-3. **Handles Errors:**  
-   Catches connection and authentication issues with Netmiko's exception classes (`NetmikoTimeoutException` and `NetmikoAuthenticationException`).
+2. **Command Execution:**  
+   - **First Command:**  
+     Navigates to a specific directory (`/home/ubuntu/QCAT`) and creates a file (`Log-20250101.qmdl`).
+   - **Second Command:**  
+     Uses SCP to transfer the newly created file to a remote server at IP `5.34.196.245`, placing it in `/home/ubuntu/QMDL/`.
 
-## Download File
+3. **Feedback and Error Handling:**  
+   - The script prints the output of each executed command.
+   - In the event of a connection or authentication error, the script logs the error and continues with the next device.
 
-You can download the script file in several ways:
+## Environment Setup
 
-### Direct Download
+Before running the script, ensure the following:
 
-Click the link below to download the raw Python script file directly:
+1. **Python Installation:**  
+   Make sure Python 3.6+ is installed on your machine. You can download Python from [python.org](https://www.python.org/downloads/).
 
-- [Download script.py](https://github.com/yourusername/yourrepository/raw/main/script.py)
-
-*(Replace the URL above with the actual link to your file in your repository.)*
-
-### Clone the Repository
-
-Alternatively, you can clone the entire repository:
-
-```bash
-git clone https://github.com/yourusername/yourrepository.git
-cd yourrepository
+2. **Install Netmiko:**  
+   Install the Netmiko library using pip:
+   ```bash
+   pip install netmiko
