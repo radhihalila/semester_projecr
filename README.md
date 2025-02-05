@@ -1,14 +1,22 @@
 # **Automating the Process of OAI Log Conversion**
 
 ## **Project Overview**
-This semester project focuses on automating the conversion of **qmdl/qmdl2 files to text files** using the QCAT application. This process, which is typically done manually through QCAT's graphical user interface, has been automated using the **PyAutoGUI** library. The automation reduces the repetitive nature of manual interaction, increasing efficiency and accuracy.
+This semester project focuses on automating the qmdl Log file generation, Log Transfer to another server and the conversion of **qmdl/qmdl2 files to text files** using the QCAT application. This process, which is typically done manually through QCAT's graphical user interface, has been automated using the **PyAutoGUI** library. and for the other part to generate qmdl and file transfer to another server has been automated using **Netmiko** The automation reduces the repetitive nature of manual interaction, increasing efficiency and accuracy.
 
 ### **Steps in the Automation Process**
-1. **Manual Conversion Process**:
+1. **Generate Cryptographic Key Pair**:
+   - First of all, admin must create pair of keys to be able to connect without passsword from UE to haswell Server .
+
+2. **Log generation and transfer Automation**:
+   - By running the UE-Automation.py, following tasks will be done, we should specify IP address and Linux Commands in the file.
+   - Our Script Navigates to a specific directory (e.g., /home/ubuntu/QCAT) and creates a file (e.g., Log-20250101.qmdl).
+   - our Script Uses SCP to transfer the newly created file to a remote server at IP Address, placing it in Specified Directory.
+
+4. **Manual Conversion Process**:
    - Normally, users must click buttons and interact with QCAT to load `.qmdl` files and save them as `.txt` files.
    - This involves repetitive GUI interactions like opening files, saving outputs, and confirming overwrites.
 
-2. **Automation**:
+5. **Automation**:
    - We captured screenshots of QCAT buttons (e.g., "Open", "Save to Text") and used PyAutoGUI to automate the interactions.
    - PyAutoGUI locates GUI elements based on the reference images and interacts with them programmatically.
 
@@ -17,6 +25,7 @@ This semester project focuses on automating the conversion of **qmdl/qmdl2 files
 ## **Technical Details**
 
 ### **Libraries Used**
+- **Netmiko**: For SSH connections to Servers and perform coomand execution automation (Linux Command execution and SCP File Transfer).
 - **PyAutoGUI**: For GUI automation (locating, clicking, and interacting with UI elements).
 - **Time**: To introduce delays between steps, ensuring GUI elements are ready for interaction.
 
